@@ -12,6 +12,7 @@
         <module>springboot-miaosha-portal</module>
         <module>springboot-order</module>
         <module>springboot-stock</module>
+        <module>springboot-miaosha-common</module>
     </modules>
 
     <parent>
