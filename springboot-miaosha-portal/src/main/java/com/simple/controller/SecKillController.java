@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author zhangshl
+ * 秒杀执行入口
  */
 @Controller
 @RequestMapping("/app")

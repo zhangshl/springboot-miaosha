@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 
 /**
  * @author zhangshl
+ * 查询秒杀商品接口
  */
 @Controller
 @RequestMapping("/app")
