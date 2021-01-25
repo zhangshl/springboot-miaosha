@@ -1,9 +1,8 @@
 package com.simple.service.impl;
 
-import com.simple.domain.SkOrder;
+import com.simple.constanst.Constants;
 import com.simple.enums.ResultEnum;
 import com.simple.service.SecKillService;
-import com.simple.service.SkOrderService;
 import com.simple.util.SecKillUtils;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +23,6 @@ public class SecKillServiceImpl implements SecKillService {
     @Autowired
     private RedissonClient redissonClient;
 
-    @Autowired
-    private SkOrderService skOrderService;
-
-
     /**
      * 秒杀实现
      * @param skuId
@@ -39,13 +34,13 @@ public class SecKillServiceImpl implements SecKillService {
         if (SecKillUtils.secKillFlag.get(skuId) != null){
             return ResultEnum.FAIL.getCode();
         }
-        //生成订单，orderId在线上需要使用分布式ID
-        SkOrder skOrder = SkOrder.builder().orderId(count.getAndIncrement()).skuId(skuId).userId(123L).build();
-        long stock = redissonClient.getAtomicLong(String.valueOf(skOrder.getSkuId())).decrementAndGet();
+
+        //获取秒杀资格
+        long stock = redissonClient.getAtomicLong(Constants.KILL_STOCK_PREFIX + skuId).decrementAndGet();
         if (stock<0){
             //秒杀结束标志
-            SecKillUtils.secKillFlag.put(skOrder.getSkuId(), false);
-            redissonClient.getAtomicLong(String.valueOf(skOrder.getSkuId())).incrementAndGet();
+            SecKillUtils.secKillFlag.put(skuId, false);
+            redissonClient.getAtomicLong(Constants.KILL_STOCK_PREFIX + skuId).incrementAndGet();
             return ResultEnum.FAIL.getCode();
         }
         return ResultEnum.SUCCESS.getCode();

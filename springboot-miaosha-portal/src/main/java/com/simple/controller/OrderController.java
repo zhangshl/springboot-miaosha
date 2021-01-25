@@ -1,8 +1,8 @@
 package com.simple.controller;
 
 import com.simple.constanst.Constants;
-import com.simple.domain.SkOrder;
-import com.simple.service.SkOrderService;
+import com.simple.domain.Order;
+import com.simple.service.OrderService;
 import com.simple.service.limit.ApiLimit;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class OrderController {
 
     @Autowired
-    private SkOrderService orderService;
+    private OrderService orderService;
 
     @Autowired
     private RedissonClient redissonClient;
@@ -33,15 +33,15 @@ public class OrderController {
     @ApiLimit
     @RequestMapping("/submitOrder")
     @ResponseBody
-    public SkOrder submitOrder(SkOrder skOrder) {
+    public Order submitOrder(Order order) {
 
         /** redis预减库存 */
         try {
             //提单预减库存
-            long stock = redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + skOrder.getSkuId()).addAndGet(-skOrder.getBuyNum());
+            long stock = redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + order.getSkuId()).addAndGet(-order.getBuyNum());
             if (stock<0){
                 //无库存
-                redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + skOrder.getSkuId()).addAndGet(skOrder.getBuyNum());
+                redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + order.getSkuId()).addAndGet(order.getBuyNum());
                 return null;
             }
         }catch (Exception e){
@@ -50,13 +50,13 @@ public class OrderController {
 
         /** 插入订单进数据库 */
         try{
-            orderService.insertSelective(skOrder);
+            orderService.insertSelective(order);
         }catch (Exception e){
-            redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + skOrder.getSkuId()).addAndGet(skOrder.getBuyNum());
+            redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + order.getSkuId()).addAndGet(order.getBuyNum());
             return null;
         }
 
         //返回订单信息，跳转支付页面
-        return skOrder;
+        return order;
     }
 }
