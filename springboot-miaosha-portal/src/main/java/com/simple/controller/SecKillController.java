@@ -22,15 +22,15 @@ public class SecKillController {
     /**
      * 秒杀入口
      *
-     * @param id
+     * @param skuId
      * @return
      */
     @ApiLimit
     @RequestMapping("/secKill")
     @ResponseBody
-    public String secKill(@Param("id") Long id) {
+    public String secKill(@Param("skuId") Long skuId) {
         try {
-            int result = secKillService.seckill(id, 1);
+            int result = secKillService.seckill(skuId);
             if (result == 1) {
                 return "进入提交订单页协议";
             }

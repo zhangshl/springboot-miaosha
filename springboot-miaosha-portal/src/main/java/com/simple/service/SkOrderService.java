@@ -1,6 +1,6 @@
 package com.simple.service;
 
-import com.simple.dao.domain.SkOrder;
+import com.simple.domain.SkOrder;
 
 public interface SkOrderService {
     int deleteByPrimaryKey(Long id);

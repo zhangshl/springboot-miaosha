@@ -6,6 +6,8 @@ package com.simple.constanst;
  * @Description：静态值
  */
 public interface Constants {
-
-
+    /**秒杀库存前缀*/
+    static String KILL_STOCK_PREFIX = "KILL:STOCK:PREFIX:";
+    /**订单库存前缀*/
+    static String ORDER_STOCK_PREFIX = "ORDER:STOCK:PREFIX:";
 }

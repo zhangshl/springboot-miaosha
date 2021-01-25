@@ -1,6 +1,6 @@
 package com.simple.service.impl;
 
-import com.simple.dao.domain.SkOrder;
+import com.simple.domain.SkOrder;
 import com.simple.dao.mapper.SkOrderMapper;
 import com.simple.service.SkOrderService;
 import org.springframework.beans.factory.annotation.Autowired;

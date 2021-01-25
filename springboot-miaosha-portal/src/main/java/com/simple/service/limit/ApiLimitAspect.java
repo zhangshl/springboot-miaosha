@@ -1,7 +1,7 @@
 package com.simple.service.limit;
 
 import com.google.common.util.concurrent.RateLimiter;
-import com.simple.dao.domain.SkGoods;
+import com.simple.domain.SkGoods;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

@@ -2,7 +2,8 @@ package com.simple.service.impl;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.simple.dao.domain.SkGoods;
+import com.simple.constanst.Constants;
+import com.simple.domain.SkGoods;
 import com.simple.dao.mapper.SkGoodsMapper;
 import com.simple.service.ProductService;
 import com.simple.util.SecKillUtils;
@@ -37,43 +38,51 @@ public class ProductServiceImpl implements ProductService, InitializingBean {
 
     /**
      * 查询商品
-     * @param id
+     * @param skuId
      * @return
      */
     @Override
-    public SkGoods selectByPrimaryKey(Long id) {
-        if (localCache.get(id)!=null){
-            return localCache.get(id);
+    public SkGoods selectByPrimaryKey(Long skuId) {
+        if (localCache.get(skuId)!=null){
+            return localCache.get(skuId);
         }
 
-        SkGoods skGoods = skGoodsMapper.selectByPrimaryKey(id);
+        SkGoods skGoods = skGoodsMapper.selectByPrimaryKey(skuId);
 
         //放入缓存
-        localCache.put(id, skGoods);
+        localCache.put(skuId, skGoods);
         //将商品库存放入redis缓存
-        redissonClient.getAtomicLong(String.valueOf(id)).set(skGoods.getGoodsStock());
-        redissonClient.getAtomicLong(String.valueOf(id)).expire(TIME_OUT, TimeUnit.DAYS);
+        redissonClient.getAtomicLong(Constants.KILL_STOCK_PREFIX + skuId).set(skGoods.getGoodsStock());
+        redissonClient.getAtomicLong(Constants.KILL_STOCK_PREFIX + skuId).expire(TIME_OUT, TimeUnit.DAYS);
+
+        //将商品库存放入redis缓存
+        redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + skuId).set(skGoods.getGoodsStock());
+        redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + skuId).expire(TIME_OUT, TimeUnit.DAYS);
 
         return skGoods;
     }
 
     /**
      * 重置库存
-     * @param id
+     * @param skuId
      * @return
      */
     @Override
-    public SkGoods reset(Long id) {
-        SkGoods skGoods = skGoodsMapper.selectByPrimaryKey(id);
+    public SkGoods reset(Long skuId) {
+        SkGoods skGoods = skGoodsMapper.selectByPrimaryKey(skuId);
 
         //放入缓存
-        localCache.put(id, skGoods);
+        localCache.put(skuId, skGoods);
         //将商品库存放入redis缓存
-        redissonClient.getAtomicLong(String.valueOf(id)).set(skGoods.getGoodsStock());
-        redissonClient.getAtomicLong(String.valueOf(id)).expire(TIME_OUT, TimeUnit.DAYS);
+        redissonClient.getAtomicLong(Constants.KILL_STOCK_PREFIX + skuId).set(skGoods.getGoodsStock());
+        redissonClient.getAtomicLong(Constants.KILL_STOCK_PREFIX + skuId).expire(TIME_OUT, TimeUnit.DAYS);
+
+        //将商品库存放入redis缓存
+        redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + skuId).set(skGoods.getGoodsStock());
+        redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + skuId).expire(TIME_OUT, TimeUnit.DAYS);
 
         // 重置售罄标志
-        SecKillUtils.secKillFlag.remove(id);
+        SecKillUtils.secKillFlag.remove(skuId);
         return skGoods;
     }
 
@@ -90,11 +99,16 @@ public class ProductServiceImpl implements ProductService, InitializingBean {
                 .build(k -> getValue(k));
 
         /** 初始化将秒杀商品加载进缓存，按业务逻辑需求加载需要的数据*/
-        Long id = 3L;
-        SkGoods skGoods = skGoodsMapper.selectByPrimaryKey(id);
-        localCache.put(id, skGoods);
-        redissonClient.getAtomicLong(String.valueOf(id)).set(skGoods.getGoodsStock());
-        redissonClient.getAtomicLong(String.valueOf(id)).expire(TIME_OUT, TimeUnit.DAYS);
+        Long skuId = 3L;
+        SkGoods skGoods = skGoodsMapper.selectByPrimaryKey(skuId);
+        localCache.put(skuId, skGoods);
+        //将商品库存放入redis缓存
+        redissonClient.getAtomicLong(Constants.KILL_STOCK_PREFIX + skuId).set(skGoods.getGoodsStock());
+        redissonClient.getAtomicLong(Constants.KILL_STOCK_PREFIX + skuId).expire(TIME_OUT, TimeUnit.DAYS);
+
+        //将商品库存放入redis缓存
+        redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + skuId).set(skGoods.getGoodsStock());
+        redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + skuId).expire(TIME_OUT, TimeUnit.DAYS);
     }
 
     public SkGoods getValue(Long key){

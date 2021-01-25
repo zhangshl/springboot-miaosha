@@ -1,6 +1,6 @@
 package com.simple.service;
 
-import com.simple.dao.domain.SkGoods;
+import com.simple.domain.SkGoods;
 
 /**
  * @Author: zhangshaolong001

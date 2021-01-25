@@ -1,4 +1,4 @@
-package com.simple.dao.domain;
+package com.simple.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Builder
 public class SkGoods {
-    private Long id;
+    private Long skuId;
 
     private String goodsName;
 

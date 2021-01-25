@@ -1,6 +1,6 @@
 package com.simple.service.impl;
 
-import com.simple.dao.domain.SkOrder;
+import com.simple.domain.SkOrder;
 import com.simple.enums.ResultEnum;
 import com.simple.service.SecKillService;
 import com.simple.service.SkOrderService;
@@ -30,33 +30,24 @@ public class SecKillServiceImpl implements SecKillService {
 
     /**
      * 秒杀实现
-     * @param id
-     * @param number
+     * @param skuId
      * @return
      */
     @Override
-    public int seckill(Long id, int number) {
-        if (SecKillUtils.secKillFlag.get(id) != null){
+    public int seckill(Long skuId) {
+        //秒杀是否结束标记
+        if (SecKillUtils.secKillFlag.get(skuId) != null){
             return ResultEnum.FAIL.getCode();
         }
         //生成订单，orderId在线上需要使用分布式ID
-        SkOrder skOrder = SkOrder.builder().orderId(count.getAndIncrement()).goodsId(id).userId(123L).build();
-        long stock = redissonClient.getAtomicLong(String.valueOf(skOrder.getGoodsId())).decrementAndGet();
+        SkOrder skOrder = SkOrder.builder().orderId(count.getAndIncrement()).skuId(skuId).userId(123L).build();
+        long stock = redissonClient.getAtomicLong(String.valueOf(skOrder.getSkuId())).decrementAndGet();
         if (stock<0){
             //秒杀结束标志
-            SecKillUtils.secKillFlag.put(skOrder.getGoodsId(), false);
-            redissonClient.getAtomicLong(String.valueOf(skOrder.getGoodsId())).incrementAndGet();
+            SecKillUtils.secKillFlag.put(skOrder.getSkuId(), false);
+            redissonClient.getAtomicLong(String.valueOf(skOrder.getSkuId())).incrementAndGet();
             return ResultEnum.FAIL.getCode();
         }
-        //若有多个本地改库操作，需要使用事务
-        try {
-            int result = skOrderService.insert(skOrder);
-        }catch (Exception e){
-            //插入订单失败，回滚库存
-            redissonClient.getAtomicLong(String.valueOf(skOrder.getGoodsId())).incrementAndGet();
-            return ResultEnum.FAIL.getCode();
-        }
-
         return ResultEnum.SUCCESS.getCode();
     }
 }

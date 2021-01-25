@@ -1,6 +1,6 @@
 package com.simple.controller;
 
-import com.simple.dao.domain.SkGoods;
+import com.simple.domain.SkGoods;
 import com.simple.service.ProductService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,25 +24,24 @@ public class ProductController {
     /**
      * 查询秒杀商品
      *
-     * @param id
+     * @param skuId
      * @return
      * @ApiLimit 为本地限流
      */
     @RequestMapping("/queryProduct")
     @ResponseBody
-    public SkGoods queryProduct(@Param("id") Long id) {
-        return productService.selectByPrimaryKey(id);
+    public SkGoods queryProduct(@Param("skuId") Long skuId) {
+        return productService.selectByPrimaryKey(skuId);
     }
 
     /**
      * 增加商品
      *
-     * @param id
      * @return
      */
     @RequestMapping("/insertProduct")
     @ResponseBody
-    public int insertProduct(@Param("id") Long id) {
+    public int insertProduct() {
         SkGoods skGoods = SkGoods.builder().goodsTitle("苹果手机").goodsName("iPhone12").goodsPrice(new BigDecimal(1)).goodsStock(100).build();
         return productService.insert(skGoods);
     }
@@ -50,13 +49,13 @@ public class ProductController {
     /**
      * 重置商品库存
      *
-     * @param id
+     * @param skuId
      * @return
      */
     @RequestMapping("/reset")
     @ResponseBody
-    public SkGoods reset(@Param("id") Long id) {
-        return productService.selectByPrimaryKey(id);
+    public SkGoods reset(@Param("skuId") Long skuId) {
+        return productService.selectByPrimaryKey(skuId);
     }
 
 }

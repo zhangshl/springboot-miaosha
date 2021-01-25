@@ -6,5 +6,5 @@ package com.simple.service;
  * @Description：秒杀服务
  */
 public interface SecKillService {
-    int seckill(Long id, int number);
+    int seckill(Long id);
 }

@@ -1,6 +1,6 @@
 package com.simple.dao.mapper;
 
-import com.simple.dao.domain.SkOrder;
+import com.simple.domain.SkOrder;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
