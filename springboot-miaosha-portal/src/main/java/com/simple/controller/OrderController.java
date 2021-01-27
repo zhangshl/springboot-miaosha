@@ -2,13 +2,20 @@ package com.simple.controller;
 
 import com.simple.constanst.Constants;
 import com.simple.domain.Order;
+import com.simple.enums.RocketMQDelayLevelEnum;
 import com.simple.service.OrderService;
-import com.simple.service.limit.ApiLimit;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.SendStatus;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author zhangshl
@@ -18,11 +25,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/app")
 public class OrderController {
 
+    /** 自增ID，分布式环境使用分布式ID */
+    private AtomicLong orderIdGenerate= new AtomicLong();
+
     @Autowired
     private OrderService orderService;
 
     @Autowired
     private RedissonClient redissonClient;
+
+    @Resource
+    private RocketMQTemplate rocketMQTemplate;
 
     /**
      * 提交订单：通用订单流程，不止给秒杀用，普通商品也走次流程
@@ -30,7 +43,6 @@ public class OrderController {
      *
      * 此逻辑可能出现少卖问题，当redis中订单为0的情况下，间隔一段时间进行mysql和redis的数据同步
      */
-    @ApiLimit
     @RequestMapping("/submitOrder")
     @ResponseBody
     public Order submitOrder(Order order) {
@@ -45,6 +57,14 @@ public class OrderController {
                 return null;
             }
         }catch (Exception e){
+            return null;
+        }
+
+        order.setId(System.currentTimeMillis()+orderIdGenerate.incrementAndGet());
+        /**发送延时消息，预扣了库存，如果提单失败，或者到期不支付，则回滚预扣的库存*/
+        //TODO rocketMQTemplate 需要重新配置一个延时的topic
+        SendResult sendResult = rocketMQTemplate.syncSend("delay:tag1", MessageBuilder.withPayload(order).build(), 1000, RocketMQDelayLevelEnum.DELAY_5M.getLevel());
+        if (sendResult.getSendStatus() != SendStatus.SEND_OK){
             return null;
         }
 

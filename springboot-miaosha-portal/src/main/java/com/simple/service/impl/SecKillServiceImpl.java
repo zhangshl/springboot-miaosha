@@ -8,8 +8,6 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 /**
  * @Author: zhangshaolong001
  * @Date: 2021/1/12 6:18 下午
@@ -17,8 +15,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Service
 public class SecKillServiceImpl implements SecKillService {
-    /** 自增ID，分布式环境使用分布式ID */
-    private AtomicLong count= new AtomicLong();
 
     @Autowired
     private RedissonClient redissonClient;
@@ -43,6 +39,9 @@ public class SecKillServiceImpl implements SecKillService {
             redissonClient.getAtomicLong(Constants.KILL_STOCK_PREFIX + skuId).incrementAndGet();
             return ResultEnum.FAIL.getCode();
         }
+
+        //TODO 记录日志
+
         return ResultEnum.SUCCESS.getCode();
     }
 }

@@ -35,6 +35,7 @@ public class PayController {
         Message<SkOrderPayResult> message = MessageBuilder.withPayload(skOrderPayResult).build();
 
         //订单支付成功的后续操作
-        rocketMQTemplate.sendMessageInTransaction("tx-order", message, null);
+        //destination，topic:tag，tag作为子类，同一个topic区分不同类型消息
+        rocketMQTemplate.sendMessageInTransaction("order:secKill", message, null);
     }
 }
