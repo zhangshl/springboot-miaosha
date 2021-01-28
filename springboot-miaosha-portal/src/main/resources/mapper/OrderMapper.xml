@@ -15,15 +15,15 @@
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />
-    from order
+    from t_order
     where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
-    delete from order
+    delete from t_order
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.simple.domain.Order" >
-    insert into order (id, user_id, sku_id, 
+    insert into t_order (id, user_id, sku_id,
       buy_num, amount, status
       )
     values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{skuId,jdbcType=BIGINT}, 
@@ -31,7 +31,7 @@
       )
   </insert>
   <insert id="insertSelective" parameterType="com.simple.domain.Order" >
-    insert into order
+    insert into t_order
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
@@ -74,7 +74,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.simple.domain.Order" >
-    update order
+    update t_order
     <set >
       <if test="userId != null" >
         user_id = #{userId,jdbcType=BIGINT},
@@ -95,7 +95,7 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.simple.domain.Order" >
-    update order
+    update t_order
     set user_id = #{userId,jdbcType=BIGINT},
       sku_id = #{skuId,jdbcType=BIGINT},
       buy_num = #{buyNum,jdbcType=INTEGER},

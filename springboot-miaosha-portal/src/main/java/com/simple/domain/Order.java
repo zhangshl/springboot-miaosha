@@ -18,7 +18,7 @@ public class Order {
 
     private Integer buyNum;
 
-    private Long amount;
+    private Double amount;
 
     private Integer status;
 }

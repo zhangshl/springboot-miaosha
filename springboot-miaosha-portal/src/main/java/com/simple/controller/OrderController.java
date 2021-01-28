@@ -60,7 +60,7 @@ public class OrderController {
             return null;
         }
 
-        order.setId(System.currentTimeMillis()+orderIdGenerate.incrementAndGet());
+        order.setId(System.currentTimeMillis() + orderIdGenerate.incrementAndGet());
         /**发送延时消息，预扣了库存，如果提单失败，或者到期不支付，则回滚预扣的库存*/
         //TODO rocketMQTemplate 需要重新配置一个延时的topic
         SendResult sendResult = rocketMQTemplate.syncSend("delay:tag1", MessageBuilder.withPayload(order).build(), 1000, RocketMQDelayLevelEnum.DELAY_5M.getLevel());
@@ -73,6 +73,7 @@ public class OrderController {
             orderService.insertSelective(order);
         }catch (Exception e){
             redissonClient.getAtomicLong(Constants.ORDER_STOCK_PREFIX + order.getSkuId()).addAndGet(order.getBuyNum());
+            e.printStackTrace();
             return null;
         }
 
