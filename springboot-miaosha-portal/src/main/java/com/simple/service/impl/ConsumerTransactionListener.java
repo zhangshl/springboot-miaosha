@@ -9,13 +9,14 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RocketMQMessageListener(
-	topic = "${rocketmq.producer.topic}",
-	consumerGroup = "group2"
+	topic = "${rocketmq.producer.transaction.topic}",
+	consumerGroup = "transactionGroup"
 )
 public class ConsumerTransactionListener implements RocketMQListener<String> {
 
 	@Override
 	public void onMessage(String s) {
+		System.out.println(s);
 		//TODO 去实际扣库存，update数据库
 	}
 }

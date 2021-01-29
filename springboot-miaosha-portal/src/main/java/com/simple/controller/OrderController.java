@@ -9,6 +9,7 @@ import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,9 @@ public class OrderController {
     @Resource
     private RocketMQTemplate rocketMQTemplate;
 
+    @Value("${rocketmq.producer.delay.topic}")
+    private String delayTopic;
+
     /**
      * 提交订单：通用订单流程，不止给秒杀用，普通商品也走次流程
      * @return
@@ -62,8 +66,7 @@ public class OrderController {
 
         order.setId(System.currentTimeMillis() + orderIdGenerate.incrementAndGet());
         /**发送延时消息，预扣了库存，如果提单失败，或者到期不支付，则回滚预扣的库存*/
-        //TODO rocketMQTemplate 需要重新配置一个延时的topic
-        SendResult sendResult = rocketMQTemplate.syncSend("delay:tag1", MessageBuilder.withPayload(order).build(), 1000, RocketMQDelayLevelEnum.DELAY_5M.getLevel());
+        SendResult sendResult = rocketMQTemplate.syncSend(delayTopic, MessageBuilder.withPayload(order).build(), 1000, RocketMQDelayLevelEnum.DELAY_5M.getLevel());
         if (sendResult.getSendStatus() != SendStatus.SEND_OK){
             return null;
         }

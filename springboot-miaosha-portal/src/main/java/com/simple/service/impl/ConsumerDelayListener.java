@@ -11,13 +11,14 @@ import javax.annotation.Resource;
  */
 @Service
 @RocketMQMessageListener(
-	topic = "${rocketmq.producer.topic}",
-	consumerGroup = "group1"
+	topic = "${rocketmq.producer.delay.topic}",
+	consumerGroup = "delayGroup"
 )
 public class ConsumerDelayListener implements RocketMQListener<String> {
 
 	@Override
 	public void onMessage(String s) {
+		System.out.println(s);
 		//TODO 延时消息处理，查看该订单是否支付
 	}
 }
