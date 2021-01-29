@@ -39,7 +39,9 @@ public class PayTransactionListenerImpl implements RocketMQLocalTransactionListe
             SkOrderPayResult payResult = JSONObject.parseObject(orderMessage, SkOrderPayResult.class);
             //支付成功，异步执行扣库存，消费此消息
             if (ResultEnum.SUCCESS.getCode() == payResult.getResult()){
-                //TODO 修改订单状态，异步消息去扣mysql库存
+                //TODO 查询第三方支付后端，校验订单是否付款完成
+
+                //修改订单状态未已支付
                 Order order = orderService.selectByPrimaryKey(payResult.getOrderId());
                 order.setStatus(ResultEnum.SUCCESS.getCode());
                 orderService.updateByPrimaryKey(order);
@@ -69,6 +71,8 @@ public class PayTransactionListenerImpl implements RocketMQLocalTransactionListe
             if (order != null && order.getStatus().equals(ResultEnum.SUCCESS.getCode())){
                 return RocketMQLocalTransactionState.COMMIT;
             }
+
+            //TODO 如果本地表订单状态不是已支付，则查询第三方支付后端接口
 
             //其他状态不扣库存，也不回滚，等待另一个延时队列结果
         } catch (Exception e) {

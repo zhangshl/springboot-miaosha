@@ -19,6 +19,6 @@ public class ConsumerDelayListener implements RocketMQListener<String> {
 	@Override
 	public void onMessage(String s) {
 		System.out.println(s);
-		//TODO 延时消息处理，查看该订单是否支付
+		//TODO 延时消息处理，查看该订单是否支付，超过时间未支付，关闭订单，回滚预扣库存
 	}
 }
