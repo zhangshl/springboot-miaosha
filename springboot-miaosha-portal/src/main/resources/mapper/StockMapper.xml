@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.simple.dao.mapper.StockMapper" >
+  <resultMap id="BaseResultMap" type="com.simple.domain.Stock" >
+    <id column="sku_id" property="skuId" jdbcType="BIGINT" />
+    <result column="goods_stock" property="goodsStock" jdbcType="INTEGER" />
+    <result column="left_stock" property="leftStock" jdbcType="INTEGER" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sku_id, goods_stock, left_stock, version
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from stock
+    where sku_id = #{skuId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from stock
+    where sku_id = #{skuId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.simple.domain.Stock" >
+    insert into stock (sku_id, goods_stock, left_stock, 
+      version)
+    values (#{skuId,jdbcType=BIGINT}, #{goodsStock,jdbcType=INTEGER}, #{leftStock,jdbcType=INTEGER}, 
+      #{version,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.simple.domain.Stock" >
+    insert into stock
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="skuId != null" >
+        sku_id,
+      </if>
+      <if test="goodsStock != null" >
+        goods_stock,
+      </if>
+      <if test="leftStock != null" >
+        left_stock,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="skuId != null" >
+        #{skuId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsStock != null" >
+        #{goodsStock,jdbcType=INTEGER},
+      </if>
+      <if test="leftStock != null" >
+        #{leftStock,jdbcType=INTEGER},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.simple.domain.Stock" >
+    update stock
+    <set >
+      <if test="leftStock != null" >
+        left_stock = #{leftStock,jdbcType=INTEGER},
+      </if>
+      <if test="version != null" >
+        version = version + 1
+      </if>
+    </set>
+    where sku_id = #{skuId,jdbcType=BIGINT} and version = #{version,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.simple.domain.Stock" >
+    update stock
+    set goods_stock = #{goodsStock,jdbcType=INTEGER},
+      left_stock = #{leftStock,jdbcType=INTEGER},
+      version = #{version,jdbcType=INTEGER}
+    where sku_id = #{skuId,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -5,26 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
-/**
- * @author zhangshl
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SkOrderPayResult {
-    private Long id;
-
-    private Long userId;
-
-    private Long orderId;
-
+public class Stock {
     private Long skuId;
 
-    private int result;
+    private Integer goodsStock;
 
-    private int buyNum;
+    private Integer leftStock;
+
+    private Integer version;
 
 }

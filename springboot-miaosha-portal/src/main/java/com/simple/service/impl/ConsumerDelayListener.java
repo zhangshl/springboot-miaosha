@@ -9,11 +9,11 @@ import javax.annotation.Resource;
 /**
  * mq消息消费
  */
-@Service
-@RocketMQMessageListener(
-	topic = "${rocketmq.producer.delay.topic}",
-	consumerGroup = "delayGroup"
-)
+//@Service
+//@RocketMQMessageListener(
+//	topic = "${rocketmq.producer.delay.topic}",
+//	consumerGroup = "delayGroup"
+//)
 public class ConsumerDelayListener implements RocketMQListener<String> {
 
 	@Override

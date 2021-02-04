@@ -69,7 +69,9 @@ public class OrderController {
         //TODO 分库分表的情况下，订单ID尾号后几位应为userId后几位，方便C端用户查询自己订单数据，至于用几位则根据分了多少张表而定，商家通过es查询
         //同时可将数据同步到redis和es一份
         order.setId(System.currentTimeMillis() + orderIdGenerate.incrementAndGet());
+
         /**发送延时消息，预扣了库存，如果提单失败，或者到期不支付，则回滚预扣的库存*/
+        //增加broker数量，可增加并发；失败重试或发送到别的broker、备用集群；SSD
         SendResult sendResult = rocketMQTemplate.syncSend(delayTopic, MessageBuilder.withPayload(order).build(), 1000, RocketMQDelayLevelEnum.DELAY_5M.getLevel());
         if (sendResult.getSendStatus() != SendStatus.SEND_OK){
             return null;

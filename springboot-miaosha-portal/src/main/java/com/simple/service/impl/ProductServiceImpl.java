@@ -26,7 +26,7 @@ public class ProductServiceImpl implements ProductService, InitializingBean {
 
     /**秒杀商品本地缓存*/
     private LoadingCache<Long, SkGoods> localCache;
-    private static final int TIME_OUT = 24;
+    private static final int TIME_OUT = 1;
 
     @Autowired
     private RedissonClient redissonClient;
